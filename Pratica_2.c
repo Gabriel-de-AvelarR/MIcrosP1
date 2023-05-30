@@ -2,17 +2,21 @@ int TIMERL;
 int TIMERH;
 
 void Interrupt_High() iv 0x0008 ics ICS_AUTO {
+     
+     LATE.RE1 = ~LATE.RE1;
+     
      // TODO: Enviar sinal ao buzzer
      TMR0L = TIMERL;
      TMR0H = TIMERH;
      INTCON.TMR0IF = 0;
+     
 }
 
 
 void main() {
 
-     INTCON2.RBPU = 0; // PULL UP
-     WPUB = 0XFF; // PULL UP PORTA B
+     //INTCON2.RBPU = 0; // PULL UP
+     //WPUB = 0XFF; // PULL UP PORTA B
 
      // CONFIGS TIMER E INTERRUPCOES
      INTCON.GIEH = 1;
@@ -30,11 +34,19 @@ void main() {
      ANSELB = 0; // DEFININDO PORTA B COMO DIGITAL
      TRISB = 0B00001111; // RB7 A RB4 COMO SAIDA (0) E RB3 A RB0 COMO ENTRADA (1)
 
+     ANSELC = 0;
+     TRISC = 0B00001111;
 
      ANSELA = 0;
      TRISA = 0X00;
 
-     /* 
+
+     ANSELE = 0;
+     TRISE = 0X00;
+     
+     LATA = 0;
+     
+     /*
      While ira analisar o teclado matricial, checando quais teclas  foram pressionadas.
      Entao, dependendo  da tecla ira carregar os valores certos a serem colocados no timer
      nas variaveis globais TIMERL e TIMERH. Essas variaveis  globais serao usadas para
@@ -44,99 +56,121 @@ void main() {
      */
      while(1) {
 
-                 latb = 0b11100000; // checa primeira linha
+                 latc = 0b11100000; // checa primeira linha
 
-                 if(PORTB.RB0 == 0){
+                 if(PORTC.RC0 == 0){
                         // 65295, f = 2073
-                        TIMERL = 0X0F;
+                        LATA.F0 = 1;
+                        TIMERL = 0X12;
                         TIMERH = 0XFF;
-                        
-                        TMR0L = 0X0F;
-                        TMR0H = 0XFF;
+
+                        //TMR0L = 0X0D;
+                        //TMR0H = 0XFF;
                         T0CON = 0b10000000;
+                        
+                        continue;
                  }
-                 if(PORTB.RB1 == 0){
+                 if(PORTC.RC1 == 0){
                         //65323, f = 2349
-                        PORTA.F1 = 1; // Acende led para teste
-                        
-                        TIMERL = 0X2B;
+                        LATA.F1 = 1; // Acende led para teste
+
+                        TIMERL = 0X2F;
                         TIMERH = 0XFF;
 
-                        TMR0L = 0X2B;
-                        TMR0H = 0XFF;
+                        //TMR0L = 0X2B;
+                        //TMR0H = 0XFF;
                         T0CON = 0b10000000;
+                        
+                        continue;
                  }
-                 if(PORTB.RB2 == 0){
+                 if(PORTC.RC2 == 0){
                         //65346, f = 2637
-                        PORTA.F2 = 1;  // Acende led para teste
-                        
-                        TIMERL = 0X42;
+                        LATA.F2 = 1;  // Acende led para teste
+
+                        TIMERL = 0X46;
                         TIMERH = 0XFF;
 
-                        TMR0L = 0X42;
-                        TMR0H = 0XFF;
+                        //TMR0L = 0X42;
+                        //TMR0H = 0XFF;
                         T0CON = 0b10000000;
+                        
+                        continue;
                  }
 
-                 latb = 0b11010000; // checa segunda linha
-                 if(PORTB.RB0 == 0){
+                 latc = 0b11010000; // checa segunda linha
+                 if(PORTC.RC0 == 0){
                         //65357, f= 2794
-                        PORTA.F3 = 1;
-                        
-                        TIMERL = 0X4D;
+                        LATA.F3 = 1;
+
+                        TIMERL = 0X50;
                         TIMERH = 0XFF;
 
-                        TMR0L = 0X4D;
-                        TMR0H = 0XFF;
+                        //TMR0L = 0X4D;
+                        //TMR0H = 0XFF;
                         T0CON = 0b10000000;
+                        
+                        continue;
                  }
-                 if(PORTB.RB1 == 0){
+                 if(PORTC.RC1 == 0){
                         //65376, f = 3136
-                        PORTA.F4 = 1;
-                        
-                        TIMERL = 0X60;
+                        LATA.F4 = 1;
+
+                        TIMERL = 0X64;
                         TIMERH = 0XFF;
 
-                        TMR0L = 0X60;
-                        TMR0H = 0XFF;
+                        //TMR0L = 0X60;
+                        //TMR0H = 0XFF;
                         T0CON = 0b10000000;
+                        
+                        continue;
                  }
-                 if(PORTB.RB2 == 0){
+                 if(PORTC.RC2 == 0){
                         //65394, f = 3520
-                        PORTA.F5 = 1;
-                        
-                        TIMERL = 0X72;
+                        LATA.F5 = 1;
+
+                        TIMERL = 0X75;
                         TIMERH = 0XFF;
 
-                        TMR0L = 0X72;
-                        TMR0H = 0XFF;
+                        //TMR0L = 0X72;
+                        //TMR0H = 0XFF;
                         T0CON = 0b10000000;
+                        
+                        continue;
                  }
 
-                 latb = 0b10110000; // checa terceira linha
-                 if(PORTB.RB0 == 0){
+                 latc = 0b10110000; // checa terceira linha
+                 if(PORTC.RC0 == 0){
                         //65409, f = 3951
-                        PORTA.F6 = 1;
-                        
-                        TIMERL = 0X81;
+                        LATA.F6 = 1;
+
+
+
+                        TIMERL = 0X85;
                         TIMERH = 0XFF;
 
-                        TMR0L = 0X81;
-                        TMR0H = 0XFF;
+                        //TMR0L = 0X81;
+                        //TMR0H = 0XFF;
                         T0CON = 0b10000000;
+                        
+                        continue;
                  }
-                 if(PORTB.RB1 == 0){
+                 if(PORTC.RC1 == 0){
                         //65415, f = 4146
-                        PORTA.F7 = 1;
-                        
-                        TIMERL = 0X87;
+                        LATA.F7 = 1;
+
+                        TIMERL = 0X8B;
                         TIMERH = 0XFF;
 
-                        TMR0L = 0X87;
-                        TMR0H = 0XFF;
+                        //TMR0L = 0X87;
+                        //TMR0H = 0XFF;
                         T0CON = 0b10000000;
+
+                        continue;
                  }
                  
+                 T0CON = 0;
+                 
+
                  // quarta linha, 9 e elementos alem da terceira coluna sao ignorados
      }
 }
