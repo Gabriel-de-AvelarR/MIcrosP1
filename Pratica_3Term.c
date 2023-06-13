@@ -1,9 +1,6 @@
 #define TAM 8
-unsigned int temp_res;
-float conversao;
-char stringConvert [TAM];
-unsigned int Vref =  5;
-
+unsigned int temp_res; // Valor que será lido pelo conversor AD
+float conversao; // Valor float após a conversão do valor lido anteriormente
 
 //PINOS A SEREM SETADOS
 // Lcd pinout settings
@@ -22,17 +19,14 @@ sbit LCD_D6_Direction at TRISB2_bit;
 sbit LCD_D5_Direction at TRISB1_bit;
 sbit LCD_D4_Direction at TRISB0_bit;
 
-
 void main() {
 
-  TRISA = 0;
-
-  ANSELE  = 0xFF;
-  TRISE = 0XFF;
-
-  ANSELB = 0;
-  TRISB = 0;
+  ANSELA  = 0xFF; // Definindo porta A como analógica
+  TRISA = 0XFF; // Definindo Porta A como entrada
   
+  ANSELB = 0; // Definindo porta B como digital
+  TRISB = 0; // Definindo porta B como saída
+
   ADC_Init_Advanced(_ADC_INTERNAL_FVRH1);
   Lcd_Init();
 
@@ -42,15 +36,14 @@ void main() {
 
   do {
     char str[TAM];
-    int conversaoPrim;
 
-    temp_res = ADC_Get_Sample(7);   // Get 10-bit results of AD conversion
-    conversao = (temp_res *  0.001) * 100.0;
-    sprintf(str, "%.1fC", conversao);
+    temp_res = ADC_Get_Sample(7);   // Recebe o valor de 10 bits da conversão AD
+    conversao = (temp_res *  0.001) * 100.0; // Conversao do número inteiro para float, segundo a resolução
+    sprintf(str, "%.1fC", conversao); // Transformar o valor float para string, com uma casa decimal
 
     Lcd_Out(1, 3, str);
     
-    delay_ms(200);
+    delay_ms(200); // delay para melhorar visualizacao
   } while(1);
 
 
