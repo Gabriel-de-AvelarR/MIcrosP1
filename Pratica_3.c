@@ -1,8 +1,6 @@
 #define TAM 8
 unsigned int temp_res;
 float conversao;
-char stringConvert [TAM];
-unsigned int Vref =  5;
 
 //PINOS A SEREM SETADOS
 // Lcd pinout settings
