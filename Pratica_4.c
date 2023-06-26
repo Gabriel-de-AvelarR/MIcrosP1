@@ -1,3 +1,8 @@
+// Lcd pinout settings
+sbit LCD_RS at RB4_bit;
+sbit LCD_EN at RB5_bit;
+sbit LCD_D7 at RB3_bit;
+sbit LCD_D6 at RB2_bit;
 sbit LCD_D5 at RB1_bit;
 sbit LCD_D4 at RB0_bit;
 
@@ -9,56 +14,155 @@ sbit LCD_D6_Direction at TRISB2_bit;
 sbit LCD_D5_Direction at TRISB1_bit;
 sbit LCD_D4_Direction at TRISB0_bit;
 
-void Interrupt_High() iv 0x0008 ics ICS_AUTO {
+unsigned int rpmLow;
+char rpmStr[8];
+bit flag;
 
+void Interrupt_High() iv 0x0008 ics ICS_AUTO {
+     //T3CON.TMR3ON = 0b00111101;
+     rpmLow = TMR3L;
+     flag = 1;
 }
 
 void main() {
 
+     // SET INTERRUPT
      INTCON.GIEH = 1;
      INTCON.GIEL = 1;
      RCON.IPEN = 1;
-
-     INTCON.TMR0IF = 0;  //flag de interrupção
-
-     INTCON2.TMR0IP = 1;
-     INTCON.TMR0IE = 1;
-
-     T0CON.TMR0ON = 1;
-
-     PWM1_Init(500);
-
+     
      C1ON_bit = 0;                       // Disable comparators
      C2ON_bit = 0;
 
-     ANSELA = 0;
-     TRISA = 0XFF;
+     // SET FLAGS TIMER
+     INTCON.TMR0IF = 0;  //flag de interrupção
+     INTCON2.TMR0IP = 1;
+     INTCON.TMR0IE = 1;
 
-     PORTB = 0;                          // set PORTB to 0
+     // SET TIMER 0
+     T0CON.TMR0ON = 0b10011101;
+     //T0CON.TMR0ON = 1;
+     // 34286
+     TMR0L = 0xEE;
+     TMR0H = 0x85;
+     
+     // SET TIMER 3
+     T3CON.TMR3ON = 0b10111101;
+     //T3CON.TMR3ON = 1;
+     TMR3L = 0x00;
+     TMR3H = 0x00;
+
+     // SET PINS
+     ANSELD = 0;
+     TRISD = 0XFF;
+
+     ANSELB = 0;
      TRISB = 0;                          // designate PORTB pins as output
 
      ANSELC = 0;
-     TRISC = 0;
+     TRISC = 0B00000000;
 
+     // Habilita registrador do contador
+     ANSELA = 0;
+     TRISA.RA4 = 1;
+
+     PWM1_Init(500);
      PWM1_Start();
+     PWM1_Set_Duty(0);   // INICIA COM DUTY 0%
+
      
      Lcd_Init();
-
      Lcd_Cmd(_LCD_CLEAR);               // Clear display
      Lcd_Cmd(_LCD_CURSOR_OFF);          // Cursor off
+     LCD_Out(1, 1, "DUTY CICLE=0%"); // INICIA COM DUTY 0%
+     
+     rpmLow = 0;
+     flag = 0;
+     
      while(1) {
-              if(PORTA.RA7 == 0) {
-                     PWM1_Set_Duty(0);
-              } else if (PORTA.RA6 == 0) {
-                     PWM1_Set_Duty(64);
-              } else if (PORTA.RA5 == 0) {
-                     PWM1_Set_Duty(127);
-              } else if (PORTA.RA4 == 0) {
-                     PWM1_Set_Duty(192);
-              } else if (PORTA.RA3 == 0) {
-                     PWM1_Set_Duty(255);
-              }
+              if(PORTD.RD0 == 1) {
+              
+                     TMR3L = 0x00;
+                     TMR3H = 0x00;
+                     T3CON.TMR3ON = 0b10111101;
 
+
+                     TMR0L = 0xEE;
+                     TMR0H = 0x85;
+                     T0CON.TMR0ON = 0b10011101;
+                     INTCON.TMR0IF = 0;
+              
+                     LCD_Out(1, 1, "DUTY CICLE=    ");
+                     PWM1_Set_Duty(0);
+                     LCD_Out(1, 1, "DUTY CICLE=0%");
+
+              } else if (PORTD.RD1 == 1) {
+                     TMR3L = 0x00;
+                     TMR3H = 0x00;
+                     T3CON.TMR3ON = 0b10111101;
+
+
+                     TMR0L = 0xEE;
+                     TMR0H = 0x85;
+                     T0CON.TMR0ON = 0b10011101;
+                     INTCON.TMR0IF = 0;
+                     
+                     LCD_Out(1, 1, "DUTY CICLE=    ");
+                     PWM1_Set_Duty(64);
+                     LCD_Out(1, 1, "DUTY CICLE=25%");
+
+              } else if (PORTD.RD2 == 1) {
+                     TMR3L = 0x00;
+                     TMR3H = 0x00;
+                     T3CON.TMR3ON = 0b10111101;
+
+
+                     TMR0L = 0xEE;
+                     TMR0H = 0x85;
+                     T0CON.TMR0ON = 0b10011101;
+                     INTCON.TMR0IF = 0;
+
+                     LCD_Out(1, 1, "DUTY CICLE=    ");
+                     PWM1_Set_Duty(127);
+                     LCD_Out(1, 1, "DUTY CICLE=50%");
+
+              } else if (PORTD.RD3 == 1) {
+                     TMR3L = 0x00;
+                     TMR3H = 0x00;
+                     T3CON.TMR3ON = 0b10111101;
+
+
+                     TMR0L = 0xEE;
+                     TMR0H = 0x85;
+                     T0CON.TMR0ON = 0b10011101;
+                     INTCON.TMR0IF = 0;
+
+                     LCD_Out(1, 1, "DUTY CICLE=    ");
+                     PWM1_Set_Duty(192);
+                     LCD_Out(1, 1, "DUTY CICLE=75%");
+
+              } else if (PORTD.RD4 == 1) {
+                     TMR3L = 0x00;
+                     TMR3H = 0x00;
+                     T3CON.TMR3ON = 0b10111101;
+
+
+                     TMR0L = 0xEE;
+                     TMR0H = 0x85;
+                     T0CON.TMR0ON = 0b10011101;
+                     INTCON.TMR0IF = 0;
+
+                     LCD_Out(1, 1, "DUTY CICLE=    ");
+                     PWM1_Set_Duty(255);
+                     LCD_Out(1, 1, "DUTY CICLE=100%");
+
+              }
+              
+              if(flag) {
+                     flag = 0;
+                     sprintf(rpmStr, "RPM: %d", (rpmLow * 60));
+                     LCD_Out(2, 1, rpmStr);
+              }
      }
 
 
