@@ -33,7 +33,7 @@ void main() {
      INTCON.TMR0IE = 1;
 
      // SET TIMER 0
-     T0CON.TMR0ON = 0b10101101;
+     T0CON = 0b10101101;
      //T0CON.TMR0ON = 1;
      // 34286
      TMR0L = 0xEE;
@@ -69,7 +69,7 @@ void main() {
               if(PORTD.RD0 == 1) {
                      TMR0L = 0x00;
                      TMR0H = 0x00;
-                     T0CON.TMR0ON = 0b10101101;
+                     T0CON = 0b10101101;
                      INTCON.TMR0IF = 0;
               
                      LCD_Out(1, 1, "DUTY CICLE=    ");
@@ -83,7 +83,7 @@ void main() {
               } else if (PORTD.RD1 == 1) {
                      TMR0L = 0x00;
                      TMR0H = 0x00;
-                     T0CON.TMR0ON = 0b10101101;
+                     T0CON = 0b10101101;
                      //T0CON.TMR0ON = 1;
                      INTCON.TMR0IF = 0;
                      
@@ -98,7 +98,7 @@ void main() {
               } else if (PORTD.RD2 == 1) {
                      TMR0L = 0xEE;
                      TMR0H = 0x85;
-                     T0CON.TMR0ON = 0b10101101;
+                     T0CON = 0b10101101;
                      //T0CON.TMR0ON = 1;
                      INTCON.TMR0IF = 0;
 
@@ -113,7 +113,7 @@ void main() {
               } else if (PORTD.RD3 == 1) {
                      TMR0L = 0xEE;
                      TMR0H = 0x85;
-                     T0CON.TMR0ON = 0b10101101;
+                     T0CON = 0b10101101;
                      //T0CON.TMR0ON = 1;
                      INTCON.TMR0IF = 0;
 
@@ -128,7 +128,7 @@ void main() {
               } else if (PORTD.RD4 == 1) {
                      TMR0L = 0xEE;
                      TMR0H = 0x85;
-                     T0CON.TMR0ON = 0b10101101;
+                     T0CON = 0b10101101;
                      //T0CON.TMR0ON = 1;
                      INTCON.TMR0IF = 0;
 
