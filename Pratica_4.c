@@ -14,7 +14,9 @@ sbit LCD_D6_Direction at TRISB2_bit;
 sbit LCD_D5_Direction at TRISB1_bit;
 sbit LCD_D4_Direction at TRISB0_bit;
 
+// Variável que será responsável por salvar o valor rpm
 unsigned int rpmLow;
+// String que será enviada ao LCD com valor rpm
 char rpmStr[8];
 
 void main() {
@@ -23,8 +25,9 @@ void main() {
      INTCON.GIEH = 1;
      INTCON.GIEL = 1;
      RCON.IPEN = 1;
-     
-     C1ON_bit = 0;                       // Disable comparators
+
+     // Disable comparators
+     C1ON_bit = 0;                       
      C2ON_bit = 0;
 
      // SET FLAGS TIMER
@@ -32,20 +35,18 @@ void main() {
      INTCON2.TMR0IP = 1;
      INTCON.TMR0IE = 1;
 
-     // SET TIMER 0
-     T0CON = 0b10101101;
-     //T0CON.TMR0ON = 1;
-     // 34286
-     TMR0L = 0xEE;
-     TMR0H = 0x85;
+     
+     
      
      // SET PINS
      ANSELD = 0;
      TRISD = 0XFF;
 
+     // SET PORTB PARA LCD
      ANSELB = 0;
-     TRISB = 0;                          // designate PORTB pins as output
+     TRISB = 0;                         
 
+     // SET PORTC PARA PWM
      ANSELC = 0;
      TRISC = 0B00000000;
 
@@ -53,90 +54,111 @@ void main() {
      ANSELA = 0;
      TRISA.RA4 = 1;
 
+     // SET PWM
      PWM1_Init(500);
      PWM1_Start();
      PWM1_Set_Duty(0);   // INICIA COM DUTY 0%
 
-     
+     // SET LCD
      Lcd_Init();
      Lcd_Cmd(_LCD_CLEAR);               // Clear display
      Lcd_Cmd(_LCD_CURSOR_OFF);          // Cursor off
      LCD_Out(1, 1, "DUTY CICLE=0%"); // INICIA COM DUTY 0%
-     
-     rpmLow = 0;
-     
+
+     /* LOOP PRINCIPAL DO PROGRAMA
+     O PROGRAMA IRÁ AGUARDAR O PRESSIONAMENTO DE ALGUM DOS BOTÕES DA PORTA D
+     ENTÃO IRÁ INICIAR O TIMER, COMEÇANDO EM 0 E EM MODO CONTADOR
+     DEPOIS ENVIARÁ O DUTY CICLE AO LCD
+     TERÁ UM DELAY DE 250 MS
+     IRÁ RECUPERAR O VALOR DO CONTADOR QUE SERÁ ENVADO AO LCD
+          */
      while(1) {
               if(PORTD.RD0 == 1) {
-                     TMR0L = 0x00;
-                     TMR0H = 0x00;
-                     T0CON = 0b10101101;
-                     INTCON.TMR0IF = 0;
-              
+                     // ENVIA DUTY CICLE ATUAL AO LCD
                      LCD_Out(1, 1, "DUTY CICLE=    ");
                      PWM1_Set_Duty(0);
                      LCD_Out(1, 1, "DUTY CICLE=0%");
-                     
+
+                     // SET COUNTER 0
+                     TMR0L = 0;
+                     TMR0H = 0;
+                     T0CON = 0b10101101;
+
+                     // DELAY 250 MS
                      delay_ms(250);
+
+                     // ENVIA CONTAGEM RPM AO LCD
                      rpmLow = TMR0L;
                      sprintf(rpmStr, "RPM: %d", (rpmLow * 4));
                      LCD_Out(2, 1, rpmStr);
               } else if (PORTD.RD1 == 1) {
-                     TMR0L = 0x00;
-                     TMR0H = 0x00;
-                     T0CON = 0b10101101;
-                     //T0CON.TMR0ON = 1;
-                     INTCON.TMR0IF = 0;
-                     
+                     // ENVIA DUTY CICLE ATUAL AO LCD
                      LCD_Out(1, 1, "DUTY CICLE=    ");
-                     PWM1_Set_Duty(64);
-                     LCD_Out(1, 1, "DUTY CICLE=25%");
-                     
+                     PWM1_Set_Duty(0);
+                     LCD_Out(1, 1, "DUTY CICLE=0%");
+
+                     // SET COUNTER 0
+                     TMR0L = 0;
+                     TMR0H = 0;
+                     T0CON = 0b10101101;
+
+                     // DELAY 250 MS
                      delay_ms(250);
+                   
                      rpmLow = TMR0L;
                      sprintf(rpmStr, "RPM: %d", (rpmLow * 4));
                      LCD_Out(2, 1, rpmStr);
               } else if (PORTD.RD2 == 1) {
-                     TMR0L = 0xEE;
-                     TMR0H = 0x85;
-                     T0CON = 0b10101101;
-                     //T0CON.TMR0ON = 1;
-                     INTCON.TMR0IF = 0;
-
+                     // ENVIA DUTY CICLE ATUAL AO LCD
                      LCD_Out(1, 1, "DUTY CICLE=    ");
-                     PWM1_Set_Duty(127);
-                     LCD_Out(1, 1, "DUTY CICLE=50%");
-
+                     PWM1_Set_Duty(0);
+                     LCD_Out(1, 1, "DUTY CICLE=0%");
+                     
+                     // SET COUNTER 0
+                     TMR0L = 0;
+                     TMR0H = 0;
+                     T0CON = 0b10101101;
+                     
+                     // DELAY 250 MS
                      delay_ms(250);
+                   
+                     // ENVIA CONTAGEM RPM AO LCD
                      rpmLow = TMR0L;
                      sprintf(rpmStr, "RPM: %d", (rpmLow * 4));
                      LCD_Out(2, 1, rpmStr);
               } else if (PORTD.RD3 == 1) {
-                     TMR0L = 0xEE;
-                     TMR0H = 0x85;
-                     T0CON = 0b10101101;
-                     //T0CON.TMR0ON = 1;
-                     INTCON.TMR0IF = 0;
-
+                     // ENVIA DUTY CICLE ATUAL AO LCD
                      LCD_Out(1, 1, "DUTY CICLE=    ");
-                     PWM1_Set_Duty(192);
-                     LCD_Out(1, 1, "DUTY CICLE=75%");
-
+                     PWM1_Set_Duty(0);
+                     LCD_Out(1, 1, "DUTY CICLE=0%");
+                     
+                     // SET COUNTER 0
+                     TMR0L = 0;
+                     TMR0H = 0;
+                     T0CON = 0b10101101;
+                   
+                     // DELAY 250 MS
                      delay_ms(250);
+                   
+                     // ENVIA CONTAGEM RPM AO LCD
                      rpmLow = TMR0L;
                      sprintf(rpmStr, "RPM: %d", (rpmLow * 4));
                      LCD_Out(2, 1, rpmStr);
               } else if (PORTD.RD4 == 1) {
-                     TMR0L = 0xEE;
-                     TMR0H = 0x85;
-                     T0CON = 0b10101101;
-                     //T0CON.TMR0ON = 1;
-                     INTCON.TMR0IF = 0;
-
+                     // ENVIA DUTY CICLE ATUAL AO LCD
                      LCD_Out(1, 1, "DUTY CICLE=    ");
-                     PWM1_Set_Duty(255);
-                     LCD_Out(1, 1, "DUTY CICLE=100%");
-
+                     PWM1_Set_Duty(0);
+                     LCD_Out(1, 1, "DUTY CICLE=0%");
+                     
+                     // SET COUNTER 0
+                     TMR0L = 0;
+                     TMR0H = 0;
+                     T0CON = 0b10101101;
+                   
+                     // DELAY 250 MS
                      delay_ms(250);
+                   
+                     // ENVIA CONTAGEM RPM AO LCD
                      rpmLow = TMR0L;
                      sprintf(rpmStr, "RPM: %d", (rpmLow * 4));
                      LCD_Out(2, 1, rpmStr);
