@@ -14,26 +14,29 @@ sbit LCD_D6_Direction at TRISB2_bit;
 sbit LCD_D5_Direction at TRISB1_bit;
 sbit LCD_D4_Direction at TRISB0_bit;
 
-int contAceita;
-int contRejeita;
-bit escolha;
-bit leuoptico;
-bit metalOuMadeira;
-char strMadeira[16];
-char strMetal[16];
+int contAceita; // Contador de material aceito
+int contRejeita; // Contador de material rejeitado
+bit escolha; // Flag que define qual material será aceito e qual será rejeitado (se 0 madeira será aceita e se 1 metal será aceito)
+bit leuoptico; // FLag que define se o sensor óptico foi lido
+bit metalOuMadeira; // Flag que define se o material na esteira no momento eh metal ou madeira (se 1 metal se 0 madeira)
+char strMadeira[16]; // String de envio ao LCD com o número de blocos de madeira aceitos
+char strMetal[16]; // String de envio ao LCD com o número de blocos de metal aceitos
 
 void main() {
-       ANSELD = 0;
-       TRISD = 0b00000111;
+       ANSELD = 0; // Porta D digital
+       TRISD = 0b00000111; // Bits 0, 1, 2 como entrada (leitura dos sensores), resto saída
        
-       ANSELB = 0;
-       TRISB = 0;
+       ANSELB = 0; // Porta B como digital
+       TRISB = 0; // Porta B como saída
        
-       ANSELC = 0;
-       TRISC = 0xFF;
+       ANSELC = 0; // Porta C como digital
+       TRISC = 0xFF; // Porta C como saída
        
-       contAceita = 0;
-       contRejeita = 0;
+       contAceita = 0; // Inicializa o contador de materiais aceitos
+       contRejeita = 0; // Inicializa o contador de materiais rejeitados
+
+       leuoptico = 0; // Inicializa flag do leitor optico
+       metalOuMadeira = 0; // Inicializa flag que diz se o material é metal ou madeira
        
        LCD_Init();
        Lcd_Cmd(_LCD_CLEAR);               // Clear display
@@ -41,24 +44,20 @@ void main() {
        
        LCD_Out(1, 1, "Madeira: RC7");
        LCD_Out(2, 1, "Metal: RC6");
-       
+
        while(1) {
-                if(PORTC.RC7 == 0) {
+                if(PORTC.RC7 == 0) { // Madeira será aceita, metal será rejeitado
                              escolha = 0;
                              break;
                 }
-                if(PORTC.RC6 == 0) {
+                if(PORTC.RC6 == 0) { // Metal será aceito, madeira será rejeitada
                              escolha = 1;
                              break;
                 }
        }
-       
-       //while(PORTD.RD0 == 1 || PORTD.RD1 == 1); // tempo de soltura do botao
-
-       //TRISD = 0b00000111;
 
        Lcd_Cmd(_LCD_CLEAR);               // Clear display
-
+       
        /*
        ATIVACAO SENSOR OPTICO: MOVE ESTERIRA PARA DIREITA
        ATIVACAO SENSOR INDUTIVO: E METAL, ESPERAR 5,5 S
